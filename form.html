@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mandantenfragebogen</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Using a Google Font for better typography */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-xl */
+        }
+        .form-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem; /* rounded-lg */
+            background-color: #f9fafb;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #4b5563;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="tel"],
+        .form-group input[type="date"],
+        .form-group input[type="number"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem; /* rounded-md */
+            background-color: #ffffff;
+            color: #374151;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #3b82f6; /* blue-500 */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); /* ring-blue-500/25 */
+            outline: none;
+        }
+        .form-group input[type="checkbox"],
+        .form-group input[type="radio"] {
+            margin-right: 0.5rem;
+            border-radius: 0.25rem; /* rounded */
+            border: 1px solid #d1d5db;
+            color: #3b82f6;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            margin-left: 0.5rem;
+            color: #6b7280;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #374151;
+            color: #fff;
+            text-align: center;
+            border-radius: 0.375rem; /* rounded-md */
+            padding: 0.5rem;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%; /* Position the tooltip above the text */
+            left: 50%;
+            margin-left: -100px; /* Center the tooltip */
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.875rem;
+            font-weight: 400;
+        }
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #374151 transparent transparent transparent;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        .required-field::after {
+            content: '*';
+            color: #ef4444; /* red-500 */
+            margin-left: 2px;
+        }
+        .translation {
+            font-size: 0.75rem; /* text-xs */
+            color: #6b7280; /* gray-500 */
+            margin-top: 0.25rem;
+            display: block;
+            font-weight: 400;
+        }
+        /* Modal styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            text-align: center;
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        /* Print-specific styles */
+        @media print {
+            body {
+                background-color: #ffffff;
+            }
+            .container {
+                box-shadow: none;
+                border: none;
+                margin: 0;
+                padding: 0;
+                max-width: 100%;
+            }
+            .form-section {
+                border: 1px solid #ccc;
+                page-break-inside: avoid;
+            }
+            .no-print, .tooltip, .translation, button {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            .form-group input, .form-group select, .form-group textarea {
+                border: 1px solid #ccc !important;
+                box-shadow: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Mandantenfragebogen <span class="translation">(Анкета клиента)</span></h1>
+        <p class="text-center text-gray-600 mb-8">Bitte füllen Sie diesen Fragebogen sorgfältig aus, damit wir Sie optimal betreuen können. <span class="translation">(Пожалуйста, заполните эту анкету внимательно, чтобы мы могли предоставить вам оптимальную поддержку.)</span></p>
+
+        <form id="mandantenForm" class="space-y-8">
+
+            <!-- BLOCK 1: Allgemeine Angaben zum Mandat -->
+            <div class="form-section">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">1. Allgemeine Angaben zum Mandat <span class="translation">(1. Общие сведения о мандате)</span></h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label for="ansprechpartnerName" class="required-field">Name und Vorname des Ansprechpartners <span class="translation">(Имя и фамилия контактного лица)</span></label>
+                        <input type="text" id="ansprechpartnerName" name="ansprechpartnerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ansprechpartnerEmail" class="required-field">E-Mail-Adresse <span class="translation">(Адрес электронной почты)</span></label>
+                        <input type="email" id="ansprechpartnerEmail" name="ansprechpartnerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ansprechpartnerPhone">Telefonnummer (Mobil/Festnetz) <span class="tooltip">(?)<span class="tooltiptext">Пожалуйста, укажите личный номер телефона для связи, а не номер секретариата или общий номер.</span></span> <span class="translation">(Номер телефона (мобильный/стационарный))</span></label>
+                        <input type="tel" id="ansprechpartnerPhone" name="ansprechpartnerPhone">
+                    </div>
+                    <div class="form-group">
+                        <label for="sprache" class="required-field">Sprache <span class="tooltip">(?)<span class="tooltiptext">Выберите язык, на котором вы предпочитаете получать информацию и общаться.</span></span> <span class="translation">(Язык)</span></label>
+                        <select id="sprache" name="sprache" required>
+                            <option value="">Bitte wählen <span class="translation">(Пожалуйста, выберите)</span></option>
+                            <option value="Deutsch">Deutsch <span class="translation">(Немецкий)</span></option>
+                            <option value="Russisch">Russisch <span class="translation">(Русский)</span></option>
+                            <option value="Englisch">Englisch <span class="translation">(Английский)</span></option>
+                            <option value="Andere">Andere <span class="translation">(Другой)</span></option>
+                        </select>
+                    </div>
+                    <div class="form-group md:col-span-2">
+                        <label for="brancheTaetigkeit" class="required-field">Branche/Tätigkeit <span class="tooltip">(?)<span class="tooltiptext">Укажите основную отрасль или вид деятельности вашей компании.</span></span> <span class="translation">(Отрасль/Вид деятельности)</span></label>
+                        <input type="text" id="brancheTaetigkeit" name="brancheTaetigkeit" required>
+                    </div>
+                </div>
+                <div class="form-group mt-6">
+                    <label class="block mb-2 font-semibold text-gray-700">Gewünschte Leistungen <span class="translation">(Желаемые услуги)</span></label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                        <label class="inline-flex items-center"><input type="checkbox" name="leistungen" value="Finanzbuchhaltung" class="rounded"> Finanzbuchhaltung <span class="translation">(Финансовый учет)</span></label>
+                        <label class="inline-flex items-center"><input type="checkbox" name="leistungen" value="Lohnbuchhaltung" id="lohnCheck" class="rounded"> Lohnbuchhaltung <span class="translation">(Расчет заработной платы)</span></label>
+                        <label class="inline-flex items-center"><input type="checkbox" name="leistungen" value="Steuererklaerungen" id="steuerCheck" class="rounded"> Steuererklärungen <span class="translation">(Налоговые декларации)</span></label>
+                        <label class="inline-flex items-center"><input type="checkbox" name="leistungen" value="Rechtsberatung" class="rounded"> Rechtsberatung <span class="translation">(Юридические консультации)</span></label>
+                        <label class="inline-flex items-center"><input type="checkbox" name="leistungen" value="Wirtschaftsberatung" class="rounded"> Wirtschaftsberatung <span class="translation">(Экономические консультации)</span></label>
+                        <label class="inline-flex items-center"><input type="checkbox" name="leistungen" value="Bueroservice" class="rounded"> Büroservice <span class="translation">(Административные услуги)</span></label>
+                        <label class="inline-flex items-center"><input type="checkbox" name="leistungen" value="Gruenderberatung" class="rounded"> Gründerberatung <span class="translation">(Консультации для стартапов)</span></label>
+                        <label class="inline-flex items-center"><input type="checkbox" name="leistungen" value="Digitalisierung" class="rounded"> Digitalisierung & Automatisierung <span class="translation">(Цифровизация и автоматизация)</span></label>
+                        <label class="inline-flex items-center"><input type="checkbox" name="leistungen" value="Sonstiges" class="rounded"> Sonstiges <span class="translation">(Прочее)</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOCK 2: Daten zur Person des Mandanten / Vertretungsberechtigten -->
+            <div class="form-section">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">2. Daten zur Person des Mandanten / Vertretungsberechtigten <span class="translation">(2. Данные о клиенте / Уполномоченном представителе)</span></h2>
+                <p class="text-gray-600 mb-4">Bitte geben Sie hier die Daten der natürlichen Person an, die das Mandat erteilt oder für das Unternehmen vertretungsberechtigt ist. <span class="translation">(Пожалуйста, укажите здесь данные физического лица, которое выдает мандат или уполномочено представлять компанию.)</span></p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label for="mandantName" class="required-field">Name <span class="tooltip">(?)<span class="tooltiptext">Фамилия физического лица, на которое оформляется мандат.</span></span> <span class="translation">(Фамилия)</span></label>
+                        <input type="text" id="mandantName" name="mandantName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="mandantVorname" class="required-field">Vorname <span class="tooltip">(?)<span class="tooltiptext">Имя физического лица, на которое оформляется мандат.</span></span> <span class="translation">(Имя)</span></label>
+                        <input type="text" id="mandantVorname" name="mandantVorname" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gebDatum" class="required-field">Geburtsdatum <span class="tooltip">(?)<span class="tooltiptext">Дата рождения физического лица.</span></span> <span class="translation">(Дата рождения)</span></label>
+                        <input type="date" id="gebDatum" name="gebDatum" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gebOrt">Geburtsort <span class="tooltip">(?)<span class="tooltiptext">Место рождения физического лица.</span></span> <span class="translation">(Место рождения)</span></label>
+                        <input type="text" id="gebOrt" name="gebOrt">
+                    </div>
+                    <div class="form-group">
+                        <label for="staatsangehoerigkeit">Staatsangehörigkeit <span class="tooltip">(?)<span class="tooltiptext">Гражданство физического лица.</span></span> <span class="translation">(Гражданство)</span></label>
+                        <input type="text" id="staatsangehoerigkeit" name="staatsangehoerigkeit">
+                    </div>
+                    <div class="form-group">
+                        <label for="visumStatus">Visum/Aufenthaltstitel (falls zutreffend) <span class="tooltip">(?)<span class="tooltiptext">Информация о визе или разрешении на пребывание, если вы не являетесь гражданином ЕС.</span></span> <span class="translation">(Виза/Вид на жительство (если применимо))</span></label>
+                        <input type="text" id="visumStatus" name="visumStatus">
+                    </div>
+                    <!-- Structured Address Fields -->
+                    <div class="form-group md:col-span-2">
+                        <label class="required-field">Meldeadresse <span class="tooltip">(?)<span class="tooltiptext">Ваш адрес регистрации по месту жительства в Германии.</span></span> <span class="translation">(Адрес регистрации)</span></label>
+                        <input type="text" name="meldeAdresse_Strasse" placeholder="Straße, Hausnummer (Улица, номер дома)" required class="mb-2">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="text" name="meldeAdresse_PLZ" placeholder="PLZ (Почтовый индекс)" required>
+                            <input type="text" name="meldeAdresse_Ort" placeholder="Ort (Населенный пункт)" required>
+                        </div>
+                        <input type="text" name="meldeAdresse_Land" placeholder="Land (Страна)" required class="mt-2">
+                        <input type="text" name="meldeAdresse_Wohnung" placeholder="Wohnung/Appartement/Etage (optional) (Квартира/Апартаменты/Этаж (опционально))" class="mt-2">
+                    </div>
+                    <div class="form-group">
+                        <label for="steuerID" class="required-field">Steuer-Identifikationsnummer (Steuer-ID) <span class="tooltip">(?)<span class="tooltiptext">11-значный налоговый идентификационный номер, это ваш личный идентификационный номер для налоговых целей в Германии.</span></span> <span class="translation">(Налоговый идентификационный номер (Steuer-ID))</span></label>
+                        <input type="text" id="steuerID" name="steuerID" required pattern="\d{11}" title="Bitte geben Sie 11 Ziffern ein.">
+                    </div>
+                    <div class="form-group">
+                        <label for="familienstand">Familienstand <span class="tooltip">(?)<span class="tooltiptext">Ваше семейное положение.</span></span> <span class="translation">(Семейное положение)</span></label>
+                        <select id="familienstand" name="familienstand">
+                            <option value="">Bitte wählen <span class="translation">(Пожалуйста, выберите)</span></option>
+                            <option value="ledig">ledig <span class="translation">(холост/незамужем)</span></option>
+                            <option value="verheiratet">verheiratet <span class="translation">(женат/замужем)</span></option>
+                            <option value="verwitwet">verwitwet <span class="translation">(вдовец/вдова)</span></option>
+                            <option value="geschieden">geschieden <span class="translation">(разведен/разведена)</span></option>
+                        </select>
+                    </div>
+                    <div class="form-group md:col-span-2" id="ehepartnerDetails" style="display:none;">
+                        <label class="block mb-2 font-semibold text-gray-700">Angaben zum Ehepartner <span class="translation">(Сведения о супруге)</span></label>
+                        <input type="text" name="ehepartnerName" placeholder="Name Ehepartner (Фамилия супруга)" class="mb-2">
+                        <input type="text" name="ehepartnerVorname" placeholder="Vorname Ehepartner (Имя супруга)" class="mb-2">
+                        <input type="date" name="ehepartnerGebDatum" placeholder="Geburtsdatum Ehepartner (Дата рождения супруга)" class="mb-2">
+                        <input type="text" name="ehepartnerSteuerID" placeholder="Steuer-ID Ehepartner (Налоговый ID супруга)" pattern="\d{11}" title="Bitte geben Sie 11 Ziffern ein.">
+                    </div>
+                    <!-- FIXED: Angaben zu den Kindern is now always visible -->
+                    <div class="form-group md:col-span-2" id="kinderDetails">
+                        <h3 class="text-xl font-semibold mb-2 text-gray-700">Angaben zu den Kindern <span class="translation">(Сведения о детях)</span></h3>
+                        <p class="text-gray-600 mb-4 text-sm">Bitte tragen Sie hier die Daten Ihrer Kinder ein. <span class="translation">(Пожалуйста, введите здесь данные ваших детей.)</span></p>
+                        <div id="kinderContainer" class="space-y-4">
+                            <!-- Child entries will be added here by JS -->
+                        </div>
+                        <button type="button" id="addChildBtn" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-150">Kind hinzufügen <span class="translation">(Добавить ребенка)</span></button>
+                    </div>
+                    <div class="form-group md:col-span-2">
+                        <label for="bankPrivat" class="required-field">Private Bankverbindung (IBAN für ggf. Steuererstattungen) <span class="tooltip">(?)<span class="tooltiptext">Ваши личные банковские реквизиты (IBAN) для возможного возврата налогов от Finanzamt.</span></span> <span class="translation">(Личные банковские реквизиты (IBAN для возможного возврата налогов))</span></label>
+                        <input type="text" id="bankPrivat" name="bankPrivat" pattern="[A-Z]{2}[0-9]{2}[a-zA-Z0-9]{12,30}" title="Bitte geben Sie eine gültige IBAN ein." required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOCK 3: Daten zum Unternehmen -->
+            <div class="form-section">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">3. Daten zum Unternehmen <span class="translation">(3. Данные о компании)</span></h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label for="firmaName" class="required-field">Firma / Name des Unternehmens <span class="tooltip">(?)<span class="tooltiptext">Полное официальное название вашей компании.</span></span> <span class="translation">(Название фирмы / компании)</span></label>
+                        <input type="text" id="firmaName" name="firmaName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="rechtsform" class="required-field">Unternehmensform <span class="tooltip">(?)<span class="tooltiptext">Юридическая форма вашей компании (например, GmbH, Einzelunternehmen).</span></span> <span class="translation">(Правовая форма компании)</span></label>
+                        <select id="rechtsform" name="rechtsform" required>
+                            <option value="">Bitte wählen <span class="translation">(Пожалуйста, выберите)</span></option>
+                            <option value="Einzelunternehmen">Einzelunternehmen <span class="translation">(Индивидуальный предприниматель)</span></option>
+                            <option value="Freiberufler">Freiberufler <span class="translation">(Свободный художник/специалист)</span></option>
+                            <option value="GbR">GbR <span class="translation">(Гражданско-правовое товарищество)</span></option>
+                            <option value="GmbH">GmbH <span class="translation">(Общество с ограниченной ответственностью)</span></option>
+                            <option value="UG">UG (haftungsbeschränkt) <span class="translation">(Предпринимательское общество (с ограниченной ответственностью))</span></option>
+                            <option value="AG">AG <span class="translation">(Акционерное общество)</span></option>
+                            <option value="Limited">Limited (mit Betriebsstätte in DE) <span class="translation">(Компания с ограниченной ответственностью (с постоянным представительством в Германии))</span></option>
+                            <option value="Sonstige">Sonstige <span class="translation">(Прочее)</span></option>
+                        </select>
+                    </div>
+                    <!-- Structured Address Fields for Company -->
+                    <div class="form-group md:col-span-2">
+                        <label class="required-field">Unternehmensadresse <span class="tooltip">(?)<span class="tooltiptext">Юридический адрес вашей компании.</span></span> <span class="translation">(Адрес компании)</span></label>
+                        <input type="text" name="unternehmenAdresse_Strasse" placeholder="Straße, Hausnummer (Улица, номер дома)" required class="mb-2">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="text" name="unternehmenAdresse_PLZ" placeholder="PLZ (Почтовый индекс)" required>
+                            <input type="text" name="unternehmenAdresse_Ort" placeholder="Ort (Населенный пункт)" required>
+                        </div>
+                        <input type="text" name="unternehmenAdresse_Land" placeholder="Land (Страна)" required class="mt-2">
+                        <input type="text" name="unternehmenAdresse_Zusatz" placeholder="Zusatz (z.B. Etage, Büro, c/o) (Дополнение (например, этаж, офис, c/o))" class="mt-2">
+                    </div>
+                    <div class="form-group">
+                        <label for="gruendungsdatum" class="required-field">Gründungsdatum <span class="tooltip">(?)<span class="tooltiptext">Официальная дата основания компании.</span></span> <span class="translation">(Дата основания)</span></label>
+                        <input type="date" id="gruendungsdatum" name="gruendungsdatum" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="taetigkeitsBeginn">Datum der Aufnahme der selbstständigen Tätigkeit <span class="tooltip">(?)<span class="tooltiptext">Дата фактического начала вашей предпринимательской деятельности (может отличаться от даты основания компании).</span></span> <span class="translation">(Дата начала самостоятельной деятельности)</span></label>
+                        <input type="date" id="taetigkeitsBeginn" name="taetigkeitsBeginn">
+                    </div>
+                    <div class="form-group" id="geschaeftsfuehrerGroup" style="display:none;">
+                        <label for="geschaeftsfuehrer" class="required-field">Geschäftsführer <span class="tooltip">(?)<span class="tooltiptext">Имя и фамилия управляющего директора или уполномоченного представителя компании.</span></span> <span class="translation">(Управляющий директор)</span></label>
+                        <input type="text" id="geschaeftsfuehrer" name="geschaeftsfuehrer">
+                    </div>
+                    <div class="form-group">
+                        <label for="zustaendigesFinanzamt" class="required-field">Zuständiges Finanzamt <span class="tooltip">(?)<span class="tooltiptext">Налоговое управление, ответственное за вашу компанию.</span></span> <span class="translation">(Ответственное налоговое управление)</span></label>
+                        <input type="text" id="zustaendigesFinanzamt" name="zustaendigesFinanzamt" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="steuerNr" class="required-field">Steuernummer <span class="tooltip">(?)<span class="tooltiptext">Налоговый номер, присваивается вам налоговой службой для вашей компании/бизнес-деятельности.</span></span> <span class="translation">(Налоговый номер)</span></label>
+                        <input type="text" id="steuerNr" name="steuerNr" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ustID">Umsatzsteuer-Identifikationsnummer (USt-ID) <span class="tooltip">(?)<span class="tooltiptext">Идентификационный номер плательщика НДС, необходим для операций внутри ЕС.</span></span> <span class="translation">(Идентификационный номер плательщика НДС (USt-ID))</span></label>
+                        <input type="text" id="ustID" name="ustID">
+                    </div>
+                    <div class="form-group">
+                        <label for="ustVoranmeldungPflicht" class="required-field">Sind Sie zur Abgabe von Umsatzsteuer-Voranmeldungen verpflichtet? <span class="tooltip">(?)<span class="tooltiptext">Укажите, обязаны ли вы регулярно подавать предварительные декларации по НДС (например, ежемесячно, ежеквартально).</span></span> <span class="translation">(Обязаны ли вы подавать предварительные декларации по НДС?)</span></label>
+                        <select id="ustVoranmeldungPflicht" name="ustVoranmeldungPflicht" required>
+                            <option value="">Bitte wählen <span class="translation">(Пожалуйста, выберите)</span></option>
+                            <option value="Ja">Ja <span class="translation">(Да)</span></option>
+                            <option value="Nein">Nein (z.B. Kleinunternehmer) <span class="translation">(Нет (например, малый предприниматель))</span></option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="ustVoranmeldungHaeufigkeitGroup" style="display:none;">
+                        <label for="ustVoranmeldungHaeufigkeit" class="required-field">Wie oft reichen Sie USt-Voranmeldungen ein? <span class="tooltip">(?)<span class="tooltiptext">Выберите периодичность подачи ваших предварительных деклараций по НДС.</span></span> <span class="translation">(Как часто вы подаете предварительные декларации по НДС?)</span></label>
+                        <select id="ustVoranmeldungHaeufigkeit" name="ustVoranmeldungHaeufigkeit">
+                            <option value="">Bitte wählen <span class="translation">(Пожалуйста, выберите)</span></option>
+                            <option value="monatlich">Monatlich <span class="translation">(Ежемесячно)</span></option>
+                            <option value="quartalsweise">Quartalsweise <span class="translation">(Ежеквартально)</span></option>
+                            <option value="jaehrlich">Jährlich <span class="translation">(Ежегодно)</span></option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="dauerfristverlaengerungGroup" style="display:none;">
+                        <label for="dauerfristverlaengerung">Wurde eine Dauerfristverlängerung für die UStVA beantragt? <span class="tooltip">(?)<span class="tooltiptext">Было ли подано заявление на постоянное продление срока подачи предварительной декларации по НДС?</span></span> <span class="translation">(Было ли подано заявление на постоянное продление срока для UStVA?)</span></label>
+                        <select id="dauerfristverlaengerung" name="dauerfristverlaengerung">
+                            <option value="">Bitte wählen <span class="translation">(Пожалуйста, выберите)</span></option>
+                            <option value="Ja">Ja <span class="translation">(Да)</span></option>
+                            <option value="Nein">Nein <span class="translation">(Нет)</span></option>
+                            <option value="Nein, aber gewuenscht">Nein, aber gewünscht <span class="translation">(Нет, но желательно)</span></option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="paragraph19UStGGroup" style="display:none;">
+                        <label for="paragraph19UStG">Wenden Sie die Kleinunternehmerregelung (§19 UStG) an? <span class="tooltip">(?)<span class="tooltiptext">Применяете ли вы правило для малых предпринимателей (§19 Закона о НДС), освобождающее от уплаты НДС при определенных условиях?</span></span> <span class="translation">(Применяете ли вы правило для малых предпринимателей (§19 UStG)?)</span></label>
+                        <select id="paragraph19UStG" name="paragraph19UStG">
+                            <option value="">Bitte wählen <span class="translation">(Пожалуйста, выберите)</span></option>
+                            <option value="Ja">Ja <span class="translation">(Да)</span></option>
+                            <option value="Nein">Nein <span class="translation">(Нет)</span></option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="bilanziererGroup" style="display:none;">
+                        <label for="bilanzierer">Sind Sie bilanzierungspflichtig? <span class="tooltip">(?)<span class="tooltiptext">Обязаны ли вы вести бухгалтерский баланс (Bilanz) вместо упрощенного отчета о доходах и расходах (Einnahmen-Überschuss-Rechnung)?</span></span> <span class="translation">(Обязаны ли вы вести бухгалтерский баланс?)</span></label>
+                        <select id="bilanzierer" name="bilanzierer">
+                            <option value="">Bitte wählen <span class="translation">(Пожалуйста, выберите)</span></option>
+                            <option value="Ja">Ja <span class="translation">(Да)</span></option>
+                            <option value="Nein">Nein <span class="translation">(Нет)</span></option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="handelsregisterGroup" style="display:none;">
+                        <label for="handelsregisterNr">Handelsregisternummer <span class="tooltip">(?)<span class="tooltiptext">Номер вашей компании в торговом реестре.</span></span> <span class="translation">(Номер торгового реестра)</span></label>
+                        <input type="text" id="handelsregisterNr" name="handelsregisterNr">
+                    </div>
+                    <div class="form-group" id="gesellschafterlisteGroup" style="display:none;">
+                        <label class="inline-flex items-center"><input type="checkbox" name="gesellschafterlisteVorhanden" value="Ja" class="rounded"> Gesellschafterliste vorhanden? <span class="tooltip">(?)<span class="tooltiptext">Имеется ли актуальный список учредителей вашей компании?</span></span> <span class="translation">(Список учредителей имеется?)</span></label>
+                    </div>
+                    <div class="form-group md:col-span-2">
+                        <label for="bankGeschaeftlich" class="required-field">Geschäftliche Bankverbindung (IBAN) <span class="tooltip">(?)<span class="tooltiptext">Банковские реквизиты вашего бизнес-счета (IBAN).</span></span> <span class="translation">(Банковские реквизиты компании (IBAN))</span></label>
+                        <input type="text" id="bankGeschaeftlich" name="bankGeschaeftlich" pattern="[A-Z]{2}[0-9]{2}[a-zA-Z0-9]{12,30}" title="Bitte geben Sie eine gültige IBAN ein." required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOCK 4: IT-Systeme und Arbeitsabläufe -->
+            <div class="form-section">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">4. IT-Systeme und Arbeitsabläufe <span class="translation">(4. ИТ-системы и рабочие процессы)</span></h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label for="kontenrahmen">Welchen Kontenrahmen nutzen Sie? <span class="tooltip">(?)<span class="tooltiptext">Какой стандартный план счетов (например, SKR 03 или SKR 04) вы используете для своей бухгалтерии?</span></span> <span class="translation">(Какой план счетов вы используете?)</span></label>
+                        <select id="kontenrahmen" name="kontenrahmen">
+                            <option value="">Bitte wählen <span class="translation">(Пожалуйста, выберите)</span></option>
+                            <option value="SKR03">SKR 03</option>
+                            <option value="SKR04">SKR 04</option>
+                            <option value="Sonstige">Sonstige <span class="translation">(Прочее)</span></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="digitaleBelegfuehrung">Besteht eine digitale Belegführung? <span class="tooltip">(?)<span class="tooltiptext">Ведете ли вы свою документацию и чеки в электронном виде?</span></span> <span class="translation">(Ведется ли цифровой учет документов?)</span></label>
+                        <select id="digitaleBelegfuehrung" name="digitaleBelegfuehrung">
+                            <option value="">Bitte wählen <span class="translation">(Пожалуйста, выберите)</span></option>
+                            <option value="Ja">Ja <span class="translation">(Да)</span></option>
+                            <option value="Nein">Nein <span class="translation">(Нет)</span></option>
+                            <option value="Nein, aber gewuenscht">Nein, aber gewünscht <span class="translation">(Нет, но желательно)</span></option>
+                        </select>
+                    </div>
+                    <div class="form-group md:col-span-2">
+                        <label class="block mb-2 font-semibold text-gray-700">Über welchen Weg sollen Dokumente ausgetauscht werden? <span class="tooltip">(?)<span class="tooltiptext">Выберите предпочтительный способ обмена документами с нами.</span></span> <span class="translation">(Каким способом следует обмениваться документами?)</span></label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <label class="inline-flex items-center"><input type="checkbox" name="dokumentenaustausch" value="Papier" class="rounded"> Papier <span class="translation">(Бумажные)</span></label>
+                            <label class="inline-flex items-center"><input type="checkbox" name="dokumentenaustausch" value="E-Mail" class="rounded"> E-Mail <span class="translation">(Электронная почта)</span></label>
+                            <label class="inline-flex items-center"><input type="checkbox" name="dokumentenaustausch" value="Cloud" class="rounded"> Cloud (z.B. Dropbox, Google Drive) <span class="translation">(Облако (например, Dropbox, Google Drive))</span></label>
+                            <label class="inline-flex items-center"><input type="checkbox" name="dokumentenaustausch" value="Agenda-Unternehmensportal" class="rounded"> Agenda-Unternehmensportal <span class="tooltip">(?)<span class="tooltiptext">Наш защищенный онлайн-портал для обмена бухгалтерскими документами и файлами.</span></span> <span class="translation">(Портал Agenda-Unternehmensportal)</span></label>
+                        </div>
+                    </div>
+                    <div class="form-group md:col-span-2">
+                        <label for="verfahrenBeschreibung">Kurze Beschreibung des derzeitigen Verfahrens / Was wird erwartet? <span class="tooltip">(?)<span class="tooltiptext">Кратко опишите, как вы сейчас ведете свои дела, и какие ожидания у вас есть от нашей работы.</span></span> <span class="translation">(Краткое описание текущей процедуры / Что ожидается?)</span></label>
+                        <textarea id="verfahrenBeschreibung" name="verfahrenBeschreibung" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOCK 5: Steuerliche Verhältnisse und Vorberatung -->
+            <div class="form-section">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">5. Steuerliche Verhältnisse und Vorberatung <span class="translation">(5. Налоговые условия и предварительные консультации)</span></h2>
+                <div class="form-group">
+                    <label class="block mb-2 font-semibold text-gray-700">Einkunftsarten <span class="tooltip">(?)<span class="tooltiptext">Укажите все виды доходов, которые вы или ваша компания получаете.</span></span> <span class="translation">(Виды доходов)</span></label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <label class="inline-flex items-center"><input type="checkbox" name="einkunftsarten" value="Gewerbebetrieb" class="rounded"> aus Gewerbebetrieb <span class="translation">(от коммерческой деятельности)</span></label>
+                        <label class="inline-flex items-center"><input type="checkbox" name="einkunftsarten" value="Selbststaendige Arbeit" class="rounded"> aus selbständiger Arbeit <span class="translation">(от самостоятельной деятельности)</span></label>
+                        <label class="inline-flex items-center"><input type="checkbox" name="einkunftsarten" value="Nichtselbststaendige Arbeit" class="rounded"> aus nichtselbständiger Arbeit <span class="translation">(от несамостоятельной работы)</span></label>
+                        <label class="inline-flex items-center"><input type="checkbox" name="einkunftsarten" value="Kapitalvermoegen/Beteiligung" class="rounded"> aus Kapitalvermögen/Beteiligung <span class="translation">(от капитала/участия)</span></label>
+                        <label class="inline-flex items-center"><input type="checkbox" name="einkunftsarten" value="Vermietung und Verpachtung" class="rounded"> aus Vermietung und Verpachtung <span class="translation">(от сдачи в аренду и лизинг)</span></label>
+                        <label class="inline-flex items-center"><input type="checkbox" name="einkunftsarten" value="Land- und Forstwirtschaft" class="rounded"> aus Land- und Forstwirtschaft <span class="translation">(от сельского и лесного хозяйства)</span></label>
+                        <label class="inline-flex items-center"><input type="checkbox" name="einkunftsarten" value="Sonstiges" class="rounded"> Sonstiges <span class="translation">(Прочее)</span></label>
+                    </div>
+                </div>
+                <div class="form-group mt-6">
+                    <label for="kontaktVorberater">Darf Kontakt zum bisherigen Steuerberater/Rechtsanwalt aufgenommen werden? <span class="tooltip">(?)<span class="tooltiptext">Разрешаете ли вы нам связаться с вашим предыдущим налоговым консультантом или адвокатом для получения необходимых документов?</span></span> <span class="translation">(Разрешается ли связаться с предыдущим налоговым консультантом/адвокатом?)</span></label>
+                    <select id="kontaktVorberater" name="kontaktVorberater">
+                        <option value="">Bitte wählen <span class="translation">(Пожалуйста, выберите)</span></option>
+                        <option value="Ja">Ja <span class="translation">(Да)</span></option>
+                        <option value="Nein">Nein <span class="translation">(Нет)</span></option>
+                    </select>
+                </div>
+                <div class="form-group md:col-span-2" id="vorberaterDetails" style="display:none;">
+                    <h3 class="text-xl font-semibold mb-2 text-gray-700">Angaben zum Vorberater <span class="translation">(Сведения о предыдущем консультанте)</span></h3>
+                    <p class="text-gray-600 mb-4 text-sm">Bitte tragen Sie hier die Kontaktdaten Ihres bisherigen Steuerberaters/Rechtsanwalts ein. <span class="translation">(Пожалуйста, введите здесь контактные данные вашего предыдущего налогового консультанта/адвоката.)</span></p>
+                    <input type="text" name="vorberater_NameFirma" placeholder="Name der Kanzlei / Name des Beraters (Название канцелярии / Имя консультанта)" class="mb-2">
+                    <input type="text" name="vorberater_Kontaktperson" placeholder="Ansprechpartner (Контактное лицо)" class="mb-2">
+                    <input type="email" name="vorberater_Email" placeholder="E-Mail-Adresse (Адрес электронной почты)" class="mb-2">
+                    <input type="tel" name="vorberater_Telefon" placeholder="Telefonnummer (Номер телефона)">
+                </div>
+                <div class="form-group mt-6">
+                    <label class="block mb-2 font-semibold text-gray-700">Vorhandene Unterlagen (bitte anfordern): <span class="tooltip">(?)<span class="tooltiptext">Отметьте, какие из следующих документов у вас уже есть, чтобы мы могли запросить их у вас.</span></span> <span class="translation">(Имеющиеся документы (пожалуйста, запросите):)</span></label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <label class="inline-flex items-center"><input type="checkbox" name="vorhandeneUnterlagen" value="Steuerbescheide" class="rounded"> Steuerbescheide der letzten 3 Jahre <span class="tooltip">(?)<span class="tooltiptext">Это официальные уведомления от налоговой службы (Finanzamt) о размере ваших налогов после подачи деклараций.</span></span> <span class="translation">(Налоговые уведомления за последние 3 года)</span></label>
+                        <label class="inline-flex items-center"><input type="checkbox" name="vorhandeneUnterlagen" value="Gewinnermittlungen/Bilanzen" class="rounded"> Gewinnermittlungen/Bilanzen der letzten 3 Jahre <span class="tooltip">(?)<span class="tooltiptext">Это отчеты о прибыли или бухгалтерские балансы, которые ежегодно составляются вашим налоговым консультантом или бухгалтером.</span></span> <span class="translation">(Отчеты о прибыли/балансы за последние 3 года)</span></label>
+                        <label class="inline-flex items-center"><input type="checkbox" name="vorhandeneUnterlagen" value="Betriebspruefungsberichte" class="rounded"> Berichte abgeschlossener Betriebsprüfungen der letzten 5 Jahre <span class="translation">(Отчеты о завершенных налоговых проверках за последние 5 лет)</span></label>
+                        <label class="inline-flex items-center"><input type="checkbox" name="vorhandeneUnterlagen" value="KeinePruefungen" class="rounded"> Es haben bisher keine Prüfungen stattgefunden. <span class="translation">(Проверок до сих пор не проводилось.)</span></label>
+                    </div>
+                </div>
+                <div class="form-group mt-6">
+                    <label for="auslaendischeBetriebsstaetten">Gibt es ausländische Betriebsstätten oder Beteiligungen an ausländischen Gesellschaften? <span class="tooltip">(?)<span class="tooltiptext">Имеются ли у вас или вашей компании постоянные представительства за рубежом или доли в иностранных компаниях?</span></span> <span class="translation">(Есть ли иностранные представительства или доли в иностранных компаниях?)</span></label>
+                    <select id="auslaendischeBetriebsstaetten" name="auslaendischeBetriebsstaetten">
+                        <option value="">Bitte wählen <span class="translation">(Пожалуйста, выберите)</span></option>
+                        <option value="Ja">Ja <span class="translation">(Да)</span></option>
+                        <option value="Nein">Nein <span class="translation">(Нет)</span></option>
+                    </select>
+                </div>
+                <div class="form-group md:col-span-2" id="auslaendischeDetails" style="display:none;">
+                    <label for="auslaendischeDetailsText">Bitte geben Sie hier Details zu den ausländischen Betriebsstätten oder Beteiligungen an: <span class="tooltip">(?)<span class="tooltiptext">Укажите название, адрес, вид деятельности и вашу долю участия в иностранных представительствах или компаниях.</span></span> <span class="translation">(Пожалуйста, укажите здесь подробности об иностранных представительствах или долях участия:)</span></label>
+                    <textarea id="auslaendischeDetailsText" name="auslaendischeDetailsText" rows="3"></textarea>
+                </div>
+                <div class="form-group mt-6">
+                    <label for="steuerrueckstaende">Bestehen Steuerrückstände? <span class="tooltip">(?)<span class="tooltiptext">Имеются ли у вас или вашей компании неоплаченные налоговые задолженности?</span></span> <span class="translation">(Имеются ли налоговые задолженности?)</span></label>
+                    <select id="steuerrueckstaende" name="steuerrueckstaende">
+                        <option value="">Bitte wählen <span class="translation">(Пожалуйста, выберите)</span></option>
+                        <option value="Ja">Ja <span class="translation">(Да)</span></option>
+                        <option value="Nein">Nein <span class="translation">(Нет)</span></option>
+                    </select>
+                </div>
+                <div class="form-group" id="steuerrueckstaendeBetragGroup" style="display:none;">
+                    <label for="steuerrueckstaendeBetrag">Betrag der Steuerrückstände (€): <span class="tooltip">(?)<span class="tooltiptext">Пожалуйста, укажите общую сумму ваших налоговых задолженностей в евро.</span></span> <span class="translation">(Сумма налоговых задолженностей (€):)</span></label>
+                    <input type="number" id="steuerrueckstaendeBetrag" name="steuerrueckstaendeBetrag">
+                </div>
+                <div class="form-group mt-6">
+                    <label for="angestellte">Haben Sie Angestellte? <span class="tooltip">(?)<span class="tooltiptext">Есть ли у вас или вашей компании наемные сотрудники?</span></span> <span class="translation">(У вас есть сотрудники?)</span></label>
+                    <select id="angestellte" name="angestellte">
+                        <option value="">Bitte wählen <span class="translation">(Пожалуйста, выберите)</span></option>
+                        <option value="Ja">Ja <span class="translation">(Да)</span></option>
+                        <option value="Nein">Nein <span class="translation">(Нет)</span></option>
+                    </select>
+                </div>
+                <div id="angestellteDetails" class="mt-4 space-y-4" style="display:none;">
+                    <input type="number" id="anzahlAngestellte" name="anzahlAngestellte" placeholder="Anzahl der Angestellten (Количество сотрудников)">
+                    <input type="number" id="gesamteLohnsumme" name="gesamteLohnsumme" placeholder="Gesamte monatliche Lohnsumme (€) (Общая ежемесячная сумма зарплат (€))">
+                    <label class="block mb-2 font-semibold text-gray-700">Art der Löhne <span class="translation">(Вид заработной платы)</span></label>
+                    <div class="flex flex-wrap gap-4">
+                        <label class="inline-flex items-center"><input type="radio" name="artDerLoehne" value="Feste Gehälter" class="rounded"> Feste Gehälter <span class="translation">(Фиксированные оклады)</span></label>
+                        <label class="inline-flex items-center"><input type="radio" name="artDerLoehne" value="Stundenlöhne" class="rounded"> Stundenlöhne <span class="translation">(Почасовая оплата)</span></label>
+                        <label class="inline-flex items-center"><input type="radio" name="artDerLoehne" value="Beides" class="rounded"> Beides <span class="translation">(И то, и другое)</span></label>
+                    </div>
+                    <label for="zugehoerigkeitSokaBau">Zugehörigkeit zur SOKA-Bau? <span class="tooltip">(?)<span class="tooltiptext">Относится ли ваша компания к строительной отрасли и, следовательно, к SOKA-Bau? Если да, пожалуйста, отметьте также "Lohnbuchhaltung" в разделе "Желаемые услуги" (Блок 1).</span></span> <span class="translation">(Принадлежность к SOKA-Bau?)</span></label>
+                    <select id="zugehoerigkeitSokaBau" name="zugehoerigkeitSokaBau">
+                        <option value="">Bitte wählen <span class="translation">(Пожалуйста, выберите)</span></option>
+                        <option value="Ja">Ja <span class="translation">(Да)</span></option>
+                        <option value="Nein">Nein <span class="translation">(Нет)</span></option>
+                    </select>
+                    <p id="sokaBauHinweis" class="text-sm text-red-500 mt-2" style="display:none;">Bitte markieren Sie auch "Lohnbuchhaltung" in "Gewünschte Leistungen" (Block 1), um die detaillierten SOKA-Bau Felder zu aktivieren. <span class="translation">(Пожалуйста, отметьте также "Расчет заработной платы" в разделе "Желаемые услуги" (Блок 1), чтобы активировать подробные поля SOKA-Bau.)</span></p>
+                </div>
+            </div>
+
+            <!-- BLOCK 7: Angaben zur Lohnbuchhaltung (Conditional) -->
+            <div class="form-section" id="lohnSection" style="display:none;">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">7. Angaben zur Lohnbuchhaltung <span class="translation">(7. Сведения по расчету заработной платы)</span></h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label for="betriebsnummer" class="required-field">Betriebsnummer <span class="tooltip">(?)<span class="tooltiptext">Рабочий номер присваивается Агентством по труду и имеет значение для социального страхования.</span></span> <span class="translation">(Рабочий номер предприятия)</span></label>
+                        <input type="text" id="betriebsnummer" name="betriebsnummer">
+                    </div>
+                    <div class="form-group">
+                        <label for="lohnsteuerArt">Art der Lohnsteueranmeldung <span class="tooltip">(?)<span class="tooltiptext">Укажите, как часто вы подаете декларации по налогу на заработную плату.</span></span> <span class="translation">(Вид регистрации налога на заработную плату)</span></label>
+                        <select id="lohnsteuerArt" name="lohnsteuerArt">
+                            <option value="">Bitte wählen <span class="translation">(Пожалуйста, выберите)</span></option>
+                            <option value="monatlich">Monatlich <span class="translation">(Ежемесячно)</span></option>
+                            <option value="quartalsweise">Quartalsweise <span class="translation">(Ежеквартально)</span></option>
+                            <option value="jaehrlich">Jährlich <span class="translation">(Ежегодно)</span></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sokaBauNummer">SOKA-Bau Nummer (falls zutreffend) <span class="tooltip">(?)<span class="tooltiptext">Номер SOKA-Bau, если ваша деятельность связана со строительством.</span></span> <span class="translation">(Номер SOKA-Bau (если применимо))</span></label>
+                        <input type="text" id="sokaBauNummer" name="sokaBauNummer">
+                    </div>
+                    <div class="form-group md:col-span-2">
+                        <label class="block mb-2 font-semibold text-gray-700">Berufsgenossenschaft (BG) Angaben <span class="tooltip">(?)<span class="tooltiptext">Сведения о вашем профессиональном союзе (BG), который отвечает за страхование от несчастных случаев на производстве.</span></span> <span class="translation">(Сведения о профессиональном союзе (BG))</span></label>
+                        <input type="text" name="bgName" placeholder="Name der Berufsgenossenschaft (Название профессионального союза)" class="mb-2">
+                        <input type="text" name="bgKNummer" placeholder="BG - Mitgliedsnummer (K-Nummer) (BG - Членский номер (K-номер))" class="mb-2">
+                        <input type="text" name="bgUnternehmensnummer" placeholder="BG - Unternehmensnummer (BG - Номер предприятия)" class="mb-2">
+                        <input type="text" name="bgPIN" placeholder="BG - PIN (BG - ПИН-код)" class="mb-2">
+                        <input type="text" name="gefahrtarifstelle" placeholder="Gefahrtarifstelle (Тарифный пункт опасности)" class="mb-2">
+                        <input type="text" name="gefahrklasse" placeholder="Gefahrklasse (Класс опасности)">
+                    </div>
+                    <div class="form-group md:col-span-2">
+                        <label for="lohnKommentar">Kommentar zur Lohnbuchhaltung <span class="tooltip">(?)<span class="tooltiptext">Любые дополнительные комментарии или особенности, касающиеся расчета заработной платы.</span></span> <span class="translation">(Комментарий по расчету заработной платы)</span></label>
+                        <textarea id="lohnKommentar" name="lohnKommentar" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOCK 6: Rechtliche Hinweise & Zustimmung -->
+            <div class="form-section">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">6. Rechtliche Hinweise & Zustimmung <span class="translation">(6. Юридические примечания и согласие)</span></h2>
+                <div class="form-group">
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" id="preislisteBest" name="preislisteBest" value="Ja" class="rounded" required>
+                        <span class="ml-2 required-field">Ich habe die Preisliste zur Kenntnis genommen und stimme ihr zu. <span class="translation">(Я ознакомился с прейскурантом и согласен с ним.)</span></span>
+                    </label>
+                </div>
+                <div class="form-group mt-4">
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" id="vollmachtSteuernBest" name="vollmachtSteuernBest" value="Ja" class="rounded" required>
+                        <span class="ml-2 required-field">Ich bin damit einverstanden, dass die Vollmacht zur steuerlichen Vertretung (IBA RAG) vorbereitet und zur Unterschrift vorgelegt wird. <span class="translation">(Я согласен с тем, что доверенность на налоговое представительство (IBA RAG) будет подготовлена и представлена для подписания.)</span></span>
+                    </label>
+                </div>
+                <div class="form-group mt-4">
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" id="vollmachtAllgemeinBest" name="vollmachtAllgemeinBest" value="Ja" class="rounded" required>
+                        <span class="ml-2 required-field">Ich bin damit einverstanden, dass die allgemeine Vollmacht (z.B. für Krankenkassen, Ämter) vorbereitet und zur Unterschrift vorgelegt wird. <span class="translation">(Я согласен с тем, что общая доверенность (например, для больничных касс, ведомств) будет подготовлена и представлена для подписания.)</span></span>
+                    </label>
+                </div>
+                <div class="form-group mt-4">
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" id="datenschutzBest" name="datenschutzBest" value="Ja" class="rounded" required>
+                        <span class="ml-2 required-field">Ich habe die Datenschutzhinweise zur Kenntnis genommen und stimme der Datenverarbeitung zu. <span class="tooltip">(?)<span class="tooltiptext">Соглашаясь, вы подтверждаете, что ознакомились с нашей политикой конфиденциальности. Она объясняет, как мы собираем, обрабатываем и храним ваши персональные и конфиденциальные данные в соответствии с DSGVO (Общим регламентом по защите данных), для каких целей это делается (например, для выполнения мандата, юридических обязательств), ваши права (право на информацию, исправление, удаление, возражение) и меры безопасности данных.</span></span> <span class="translation">(Я ознакомился с положениями о защите данных и согласен на обработку данных.)</span></span>
+                    </label>
+                    <p class="text-sm text-gray-500 mt-1">Die vollständigen Datenschutzhinweise finden Sie auf unserer Webseite, oder falls diese derzeit nicht verfügbar ist, können Sie diese auf Anfrage in unserem Büro oder per E-Mail erhalten. <span class="translation">(Полные положения о защите данных вы найдете на нашем сайте, или если сайт в данный момент недоступен, вы можете получить их по запросу в нашем офисе или по электронной почте.)</span></p>
+                </div>
+                <div class="form-group mt-6">
+                    <label for="ortDatum" class="required-field">Ort, Datum <span class="tooltip">(?)<span class="tooltiptext">Место и дата заполнения данной анкеты.</span></span> <span class="translation">(Место, Дата)</span></label>
+                    <input type="text" id="ortDatum" name="ortDatum" value="Berlin, " required>
+                </div>
+                <div class="form-group mt-4">
+                    <label for="unterschriftName" class="required-field">Name für digitale Unterschrift / Bestätigung <span class="tooltip">(?)<span class="tooltiptext">Ваше полное имя, которое будет служить цифровым подтверждением вашего согласия.</span></span> <span class="translation">(Имя для цифровой подписи / подтверждения)</span></label>
+                    <input type="text" id="unterschriftName" name="unterschriftName" required>
+                    <p class="text-sm text-gray-500 mt-1">Ihre Eingabe gilt als digitale Bestätigung Ihrer Zustimmung. <span class="translation">(Ваш ввод считается цифровым подтверждением вашего согласия.)</span></p>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between gap-4 mt-8">
+                <button type="button" id="downloadBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition duration-300 ease-in-out transform hover:scale-105">
+                    Данные заполнены? Скачать в CSV
+                </button>
+                <button type="button" id="printPdfBtn" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-xl transition duration-300 ease-in-out transform hover:scale-105">
+                    Печать формы в PDF
+                </button>
+                <button type="button" id="sendBtn" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl transition duration-300 ease-in-out transform hover:scale-105">
+                    Bestätigen und Senden
+                </button>
+            </div>
+
+            <!-- Modal for validation warning -->
+            <div id="validationModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-button">&times;</span>
+                    <h3 class="text-xl font-bold mb-4 text-red-600">Achtung: Unvollständige Angaben! <span class="translation">(Внимание: Неполные данные!)</span></h3>
+                    <p class="mb-4">Es sind nicht alle Pflichtfelder ausgefüllt. Ohne vollständige Angaben können wir Ihre Anfrage möglicherweise nicht optimal bearbeiten oder es kann zu Verzögerungen kommen. <span class="translation">(Не все обязательные поля заполнены. Без полных данных мы, возможно, не сможем оптимально обработать ваш запрос, или могут возникнуть задержки.)</span></p>
+                    <div class="modal-buttons">
+                        <button type="button" id="closeModalBtn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-md transition duration-150">Abbrechen <span class="translation">(Отмена)</span></button>
+                        <button type="button" id="confirmSendBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition duration-150">Trotzdem senden <span class="translation">(Всё равно отправить)</span></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Print-specific section for signature -->
+            <div class="print-only mt-12 p-6 border border-gray-300 rounded-lg hidden">
+                <h2 class="text-2xl font-bold mb-6 text-gray-800">Für Ihre Unterlagen <span class="translation">(Для ваших документов)</span></h2>
+                <div class="grid grid-cols-2 gap-12 mt-8">
+                    <div>
+                        <p class="text-lg font-semibold">Ort, Datum:</p>
+                        <p class="border-b border-gray-400 pb-1 mt-2 w-full"></p>
+                    </div>
+                    <div>
+                        <p class="text-lg font-semibold">Unterschrift:</p>
+                        <p class="border-b border-gray-400 pb-1 mt-2 w-full"></p>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('mandantenForm');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const printPdfBtn = document.getElementById('printPdfBtn');
+            const sendBtn = document.getElementById('sendBtn');
+            const validationModal = document.getElementById('validationModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const confirmSendBtn = document.getElementById('confirmSendBtn');
+
+            // --- Set current date ---
+            const ortDatumInput = document.getElementById('ortDatum');
+            if (ortDatumInput.value.trim().endsWith(',')) {
+                const today = new Date();
+                const day = String(today.getDate()).padStart(2, '0');
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const year = today.getFullYear();
+                ortDatumInput.value += ` ${day}.${month}.${year}`;
+            }
+
+            // --- Conditional field elements ---
+            const familienstandSelect = document.getElementById('familienstand');
+            const ehepartnerDetails = document.getElementById('ehepartnerDetails');
+            const addChildBtn = document.getElementById('addChildBtn');
+            const kinderContainer = document.getElementById('kinderContainer');
+            let childCount = 0;
+
+            const rechtsformSelect = document.getElementById('rechtsform');
+            const handelsregisterGroup = document.getElementById('handelsregisterGroup');
+            const gesellschafterlisteGroup = document.getElementById('gesellschafterlisteGroup');
+            const geschaeftsfuehrerGroup = document.getElementById('geschaeftsfuehrerGroup');
+
+            const ustVoranmeldungPflichtSelect = document.getElementById('ustVoranmeldungPflicht');
+            const ustVoranmeldungHaeufigkeitGroup = document.getElementById('ustVoranmeldungHaeufigkeitGroup');
+
+            const steuerCheck = document.getElementById('steuerCheck');
+            const dauerfristverlaengerungGroup = document.getElementById('dauerfristverlaengerungGroup');
+            const paragraph19UStGGroup = document.getElementById('paragraph19UStGGroup');
+            const bilanziererGroup = document.getElementById('bilanziererGroup');
+
+            const kontaktVorberaterSelect = document.getElementById('kontaktVorberater');
+            const vorberaterDetails = document.getElementById('vorberaterDetails');
+
+            const auslaendischeBetriebsstaettenSelect = document.getElementById('auslaendischeBetriebsstaetten');
+            const auslaendischeDetails = document.getElementById('auslaendischeDetails');
+
+            const steuerrueckstaendeSelect = document.getElementById('steuerrueckstaende');
+            const steuerrueckstaendeBetragGroup = document.getElementById('steuerrueckstaendeBetragGroup');
+
+            const angestellteSelect = document.getElementById('angestellte');
+            const angestellteDetails = document.getElementById('angestellteDetails');
+            const lohnCheck = document.getElementById('lohnCheck');
+            const lohnSection = document.getElementById('lohnSection');
+            const sokaBauAngestellteSelect = document.getElementById('zugehoerigkeitSokaBau');
+            const sokaBauHinweis = document.getElementById('sokaBauHinweis');
+
+            // --- Helper Functions ---
+            function show(element) {
+                if (element) element.style.display = 'block';
+            }
+            function hide(element) {
+                if (element) element.style.display = 'none';
+            }
+
+            // --- Functions for dynamic fields ---
+            function addChildInput() {
+                childCount++;
+                const childDiv = document.createElement('div');
+                childDiv.className = 'grid grid-cols-1 md:grid-cols-2 gap-4 border p-4 rounded-md bg-white relative';
+                childDiv.innerHTML = `
+                    <h4 class="text-md font-semibold md:col-span-2 mb-2">Kind ${childCount} <span class="translation">(Ребенок ${childCount})</span></h4>
+                    <button type="button" class="remove-child-btn absolute top-2 right-2 text-red-500 hover:text-red-700 text-2xl font-bold leading-none p-1">&times;</button>
+                    <div class="form-group">
+                        <label for="kind_${childCount}_Name">Name <span class="translation">(Фамилия)</span></label>
+                        <input type="text" id="kind_${childCount}_Name" name="kind_${childCount}_Name" placeholder="Name (Фамилия)">
+                    </div>
+                    <div class="form-group">
+                        <label for="kind_${childCount}_Vorname">Vorname <span class="translation">(Имя)</span></label>
+                        <input type="text" id="kind_${childCount}_Vorname" name="kind_${childCount}_Vorname" placeholder="Vorname (Имя)">
+                    </div>
+                    <div class="form-group">
+                        <label for="kind_${childCount}_GebDatum">Geburtsdatum <span class="translation">(Дата рождения)</span></label>
+                        <input type="date" id="kind_${childCount}_GebDatum" name="kind_${childCount}_GebDatum" placeholder="Geburtsdatum (Дата рождения)">
+                    </div>
+                    <div class="form-group">
+                        <label for="kind_${childCount}_SteuerID">Steuer-ID-Nr. <span class="translation">(Налоговый ID)</span></label>
+                        <input type="text" id="kind_${childCount}_SteuerID" name="kind_${childCount}_SteuerID" placeholder="Steuer-ID-Nr. (Налоговый ID)" pattern="\\d{11}" title="Bitte geben Sie 11 Ziffern ein.">
+                    </div>
+                `;
+                kinderContainer.appendChild(childDiv);
+
+                childDiv.querySelector('.remove-child-btn').addEventListener('click', function() {
+                    childDiv.remove();
+                    // Note: childCount is not decremented to avoid key collisions if a new child is added later.
+                });
+            }
+
+            function toggleConditionalFields() {
+                // Block 2: Personal Data
+                familienstandSelect.value === 'verheiratet' ? show(ehepartnerDetails) : hide(ehepartnerDetails);
+                if (familienstandSelect.value !== 'verheiratet') {
+                    ehepartnerDetails.querySelectorAll('input').forEach(input => input.value = '');
+                }
+
+                // Block 3: Company Data
+                const showCompanySpecific = ['GmbH', 'UG', 'AG', 'Limited'].includes(rechtsformSelect.value);
+                showCompanySpecific ? show(handelsregisterGroup) : hide(handelsregisterGroup);
+                showCompanySpecific ? show(gesellschafterlisteGroup) : hide(gesellschafterlisteGroup);
+                showCompanySpecific ? show(geschaeftsfuehrerGroup) : hide(geschaeftsfuehrerGroup);
+                if (!showCompanySpecific) {
+                    handelsregisterGroup.querySelector('input').value = '';
+                    gesellschafterlisteGroup.querySelector('input').checked = false;
+                    geschaeftsfuehrerGroup.querySelector('input').value = '';
+                }
+
+                // Block 3: UStVA Häufigkeit
+                ustVoranmeldungPflichtSelect.value === 'Ja' ? show(ustVoranmeldungHaeufigkeitGroup) : hide(ustVoranmeldungHaeufigkeitGroup);
+                if (ustVoranmeldungPflichtSelect.value !== 'Ja') {
+                    ustVoranmeldungHaeufigkeitGroup.querySelector('select').value = '';
+                }
+
+                // Block 3: Steuererklärungen related fields
+                const showSteuerSpecific = steuerCheck.checked;
+                showSteuerSpecific ? show(dauerfristverlaengerungGroup) : hide(dauerfristverlaengerungGroup);
+                showSteuerSpecific ? show(paragraph19UStGGroup) : hide(paragraph19UStGGroup);
+                showSteuerSpecific ? show(bilanziererGroup) : hide(bilanziererGroup);
+                if (!showSteuerSpecific) {
+                    dauerfristverlaengerungGroup.querySelector('select').value = '';
+                    paragraph19UStGGroup.querySelector('select').value = '';
+                    bilanziererGroup.querySelector('select').value = '';
+                }
+
+                // Block 5: Vorberater details
+                kontaktVorberaterSelect.value === 'Ja' ? show(vorberaterDetails) : hide(vorberaterDetails);
+                if (kontaktVorberaterSelect.value !== 'Ja') {
+                    vorberaterDetails.querySelectorAll('input').forEach(input => input.value = '');
+                }
+
+                // Block 5: Ausländische Betriebsstätten/Beteiligungen details
+                auslaendischeBetriebsstaettenSelect.value === 'Ja' ? show(auslaendischeDetails) : hide(auslaendischeDetails);
+                if (auslaendischeBetriebsstaettenSelect.value !== 'Ja') {
+                    auslaendischeDetails.querySelector('textarea').value = '';
+                }
+
+                // Block 5: Steuerrueckstaende Betrag
+                steuerrueckstaendeSelect.value === 'Ja' ? show(steuerrueckstaendeBetragGroup) : hide(steuerrueckstaendeBetragGroup);
+                if (steuerrueckstaendeSelect.value !== 'Ja') {
+                    steuerrueckstaendeBetragGroup.querySelector('input').value = '';
+                }
+
+                // Block 5: Angestellte details (and SOKA-Bau hint)
+                angestellteSelect.value === 'Ja' ? show(angestellteDetails) : hide(angestellteDetails);
+                if (angestellteSelect.value !== 'Ja') {
+                    angestellteDetails.querySelectorAll('input, select, textarea').forEach(input => input.value = '');
+                    hide(sokaBauHinweis);
+                }
+
+                // SOKA-Bau hint logic
+                if (angestellteSelect.value === 'Ja' && sokaBauAngestellteSelect.value === 'Ja' && !lohnCheck.checked) {
+                    show(sokaBauHinweis);
+                } else {
+                    hide(sokaBauHinweis);
+                }
+
+                // Block 7: Lohnbuchhaltung section visibility
+                const isLohnChecked = lohnCheck.checked;
+                isLohnChecked ? show(lohnSection) : hide(lohnSection);
+                const lohnInputs = lohnSection.querySelectorAll('input, select, textarea');
+                if (!isLohnChecked) {
+                    lohnInputs.forEach(input => {
+                        input.removeAttribute('required');
+                    });
+                } else {
+                    lohnSection.querySelector('#betriebsnummer').setAttribute('required', 'required');
+                }
+            }
+
+            // --- Event Listeners ---
+            form.querySelectorAll('select, input[type="checkbox"]').forEach(el => {
+                el.addEventListener('change', toggleConditionalFields);
+            });
+            addChildBtn.addEventListener('click', addChildInput);
+            toggleConditionalFields(); // Initial call
+
+            // --- CSV Download Function ---
+            function getLabelText(element) {
+                if (!element) return '';
+                const label = element.closest('.form-group')?.querySelector('label');
+                if (label) {
+                    // Clone the label to manipulate it without affecting the DOM
+                    const labelClone = label.cloneNode(true);
+                    // Remove tooltip and translation spans
+                    labelClone.querySelectorAll('.tooltip, .translation').forEach(el => el.remove());
+                    return labelClone.textContent.trim().replace(/\*$/, '').trim();
+                }
+                return element.name || element.id;
+            }
+            
+            function generateAndDownloadCSV() {
+                let csvContent = "";
+                const headers = [];
+                const values = [];
+                const formData = new FormData(form);
+                const processedKeys = new Set();
+                
+                // Iterate through form elements in their DOM order for a more logical CSV layout
+                form.querySelectorAll('input, select, textarea').forEach(element => {
+                    const key = element.name;
+                    if (!key || processedKeys.has(key)) return;
+
+                    let value;
+                    const isCheckboxOrRadio = element.type === 'checkbox' || element.type === 'radio';
+
+                    if (isCheckboxOrRadio) {
+                        if (element.type === 'radio') {
+                             const checkedRadio = form.querySelector(`input[name="${key}"]:checked`);
+                             value = checkedRadio ? checkedRadio.value : '';
+                        } else { // Checkbox
+                            value = formData.getAll(key).join('; ');
+                        }
+                    } else {
+                        value = formData.get(key);
+                    }
+                    
+                    headers.push(`"${getLabelText(element)}"`);
+                    values.push(`"${(value || '').replace(/"/g, '""')}"`);
+                    
+                    // For multi-select checkboxes and radios, mark all as processed
+                    if(isCheckboxOrRadio) {
+                        processedKeys.add(key);
+                    }
+                });
+
+                csvContent += headers.join(',') + '\r\n';
+                csvContent += values.join(',') + '\r\n';
+
+                const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'Mandantenfragebogen_Daten.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            downloadBtn.addEventListener('click', function() {
+                if (!form.checkValidity()) {
+                    alert('Пожалуйста, заполните все обязательные поля (отмечены *) перед скачиванием.');
+                    form.reportValidity();
+                    return;
+                }
+                generateAndDownloadCSV();
+            });
+
+            // --- Send Button and Modal Logic ---
+            function sendData() {
+                // In a real application, this would send data to a server
+                alert('Форма успешно отправлена! (Это симуляция отправки данных.)');
+                // Optional: generateAndDownloadCSV();
+                // Optional: form.reset();
+            }
+
+            sendBtn.addEventListener('click', function() {
+                if (!form.checkValidity()) {
+                    validationModal.style.display = 'flex';
+                } else {
+                    sendData();
+                }
+            });
+
+            closeModalBtn.addEventListener('click', () => { validationModal.style.display = 'none'; });
+            confirmSendBtn.addEventListener('click', () => {
+                validationModal.style.display = 'none';
+                sendData();
+            });
+            window.addEventListener('click', (event) => {
+                if (event.target == validationModal) {
+                    validationModal.style.display = 'none';
+                }
+            });
+
+            // --- Print to PDF Button Logic ---
+            printPdfBtn.addEventListener('click', function() {
+                window.print();
+            });
+        });
+    </script>
+</body>
+</html>
